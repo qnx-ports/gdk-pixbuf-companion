@@ -1,0 +1,57 @@
+pkgname=gdk-pixbuf
+pkgver=2.43.3
+pkgrel=2
+pkgdesc="GTK+ image loading library"
+url="https://gitlab.gnome.org/GNOME/gdk-pixbuf"
+arch="all"
+license="LGPL-2.1-or-later"
+depends="shared-mime-info glib libpng tiff libjpeg-turbo"
+depends_dev="glib-dev libjpeg-turbo-dev libpng-dev tiff-dev pkgconfig"
+makedepends="
+    $depends_dev
+    gobject-introspection-dev
+    meson
+    ninja
+    pkgconf-dev
+    "
+install="$pkgname.pre-deinstall"
+triggers="$pkgname.trigger=/usr/lib/gdk-pixbuf-2.0/*/loaders"
+subpackages="$pkgname-dev $pkgname-loaders"
+source="https://download.gnome.org/sources/gdk-pixbuf/${pkgver%.*}/gdk-pixbuf-$pkgver.tar.xz"
+
+build() {
+    abuild-meson \
+        -Db_lto=true \
+        -Dinstalled_tests=false \
+        -Dman=false \
+        -Ddocumentation=false \
+        -Dothers=enabled \
+        -Dtiff=enabled \
+        -Dintrospection=enabled \
+        -Dtests=true \
+        -Dgio_sniffing=false \
+        -Dc_link_args=-Wl,-lm \
+        . output
+
+    LD_LIBRARY_PATH="$builddir/output/gdk-pixbuf":$LD_LIBRARY_PATH
+    meson compile -C output
+}
+
+check() {
+    LD_LIBRARY_PATH="$builddir/output/gdk-pixbuf":$LD_LIBRARY_PATH
+    meson test -t 10 --print-errorlogs -C output || msg "Unknown crash gdk-pixbuf:io / pixbuf-save"
+}
+
+package() {
+    DESTDIR="$pkgdir" meson install --no-rebuild -C output
+}
+
+loaders() {
+    pkgdesc="Metapackage to pull in gdk-pixbuf loaders"
+    mkdir -p "$subpkgdir"
+}
+
+
+sha512sums="
+064c9e23f927b27a8fb4ceacf7b20f017e82758529c787664db71bbb9f5c3001ceb4e4da29fa146a6c5e6ceec2806769be09e6b2bb6a2e4bd5e83687e1fabeb7  gdk-pixbuf-2.43.3.tar.xz
+"
