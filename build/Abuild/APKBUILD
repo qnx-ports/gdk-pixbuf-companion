@@ -1,6 +1,6 @@
 pkgname=gdk-pixbuf
 pkgver=2.43.3
-pkgrel=${pkgrel:-0}
+pkgrel=2
 pkgdesc="GTK+ image loading library"
 url="https://gitlab.gnome.org/GNOME/gdk-pixbuf"
 arch="all"
@@ -52,7 +52,6 @@ loaders() {
 }
 
 
-options="$options ${DISABLE_CHECK:+!check}"
 sha512sums="
 064c9e23f927b27a8fb4ceacf7b20f017e82758529c787664db71bbb9f5c3001ceb4e4da29fa146a6c5e6ceec2806769be09e6b2bb6a2e4bd5e83687e1fabeb7  gdk-pixbuf-2.43.3.tar.xz
 "
